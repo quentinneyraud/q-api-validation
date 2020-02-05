@@ -6,14 +6,35 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
 </head>
+
 <body>
+  <main id="app">
 
-  <div id="app">
+    <div class="l-container">
 
-    <div class="routes" v-for="(route, index) in routes" :key="index">
-      {{ route }}
+      <div class="l-row u-center">
+
+        <div class="l-column routes">
+
+          <div
+            class="route"
+            :class="routeState.state"
+            v-for="(routeState, index) in routes"
+            :key="index">
+
+            <div class="request-infos">
+              <span class="method">{{ routeState.request.method }}</span>
+              <a :href="routeState.request.url" title="Voir la page" rel="noreferrer">{{ routeState.request.url }}</a>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
 
-  </div>
+  </main>
+
 </body>
 </html>

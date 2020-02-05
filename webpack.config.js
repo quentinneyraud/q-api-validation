@@ -1,5 +1,5 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin')
 const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 const src = path.join(__dirname, 'src')
 const dist = path.join(__dirname, 'build')
@@ -17,6 +17,11 @@ const stats = {
   entrypoints: false
 }
 
+/**
+ *
+ * Client
+ *
+ */
 const clientConfig = {
   target: 'web',
   stats,
@@ -24,6 +29,18 @@ const clientConfig = {
   output: {
     path: path.join(dist, 'client'),
     filename: '[name].js'
+  },
+  module: {
+    rules: [{
+      test: /\.styl$/,
+      use: [{
+        loader: 'style-loader'
+      }, {
+        loader: 'css-loader'
+      }, {
+        loader: 'stylus-loader'
+      }]
+    }]
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -33,6 +50,11 @@ const clientConfig = {
   ]
 }
 
+/**
+ *
+ * Server
+ *
+ */
 const serverConfig = {
   target: 'node',
   stats,

@@ -8,6 +8,7 @@ module.exports = {
       "varsIgnorePattern": "^_",
       "argsIgnorePattern": "^_"
     }],
-    "padded-blocks": ["error", "never"]
+    "padded-blocks": ["error", "never"],
+    "no-new": 0
   }
 };

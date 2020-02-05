@@ -1,27 +1,25 @@
 const path = require('path')
 const ora = require('ora')
+const axios = require('axios')
+const Config = require('./config')
 const Validator = require('jsonschema').Validator
 
 module.exports = class Route {
-  constructor (config, axiosWrapper, { url, method, datas, schema, refs }) {
-    this.config = config
-    this.axiosWrapper = axiosWrapper
+  constructor ({ url, method, datas, schema, refs, requestParameters }) {
     this.url = url
     this.method = method
     this.datas = datas
     this.schema = schema
     this.refs = refs
 
-    this.fullUrl = this.config.baseUrl + this.url
-
-    this.state = {
-      hasError: false,
-      status: 200,
-      statusText: 'OK',
-      message: 'All validations passed',
-      response: [],
-      errors: []
+    this.fullUrl = Config.baseUrl + this.url
+    this.requestParameters = {
+      ...Config.requestParameters,
+      ...requestParameters,
+      url: this.fullUrl
     }
+
+    this.state = {}
 
     this.createValidator()
     this.spinner = ora()
@@ -36,20 +34,63 @@ module.exports = class Route {
       })
   }
 
+  resetState () {
+    this.updateState({
+      state: 'pending_request',
+      request: this.requestParameters,
+      response: {
+        status: null,
+        statusText: null,
+        headers: null,
+        datas: null
+      },
+      message: 'All validations passed',
+      errors: []
+    })
+  }
+
+  updateState (newState) {
+    this.state = {
+      ...this.state,
+      ...newState
+    }
+
+    // this.emit('route_state_updated', {
+    //   id: this.id,
+    //   state: this.state
+    // })
+  }
+
   async execute () {
     this.spinner.start('Request...')
+    this.resetState()
 
     try {
-      const result = await this.axiosWrapper.get(this.fullUrl)
+      const response = await axios.request({
+        ...this.requestParameters
+      })
 
-      this.state.hasError = false
+      this.updateState({
+        state: 'validating_json',
+        response: {
+          status: response.status,
+          statusText: response.statusText,
+          datas: response.datas,
+          headers: response.headers
+        }
+      })
+
       this.spinner.text = 'Validate JSON response...'
-      this.state.status = result.status
     } catch (error) {
-      this.state.hasError = true
-      this.state.status = error.response.status
-      this.state.statusText = error.response.statusText
-      this.state.message = 'Error'
+      this.updateState({
+        state: 'error_request',
+        response: {
+          status: error.response.status,
+          statusText: error.response.statusText,
+          datas: [],
+          headers: error.response.headers
+        }
+      })
     }
 
     if (this.state.hasError) {
@@ -57,11 +98,7 @@ module.exports = class Route {
     } else {
       this.spinner.succeed(`${this.method} ${this.fullUrl} : ${this.state.message}`)
     }
-    return {
-      ...this.state,
-      url: this.fullUrl,
-      datas: this.datas,
-      method: this.method
-    }
+
+    return this.state
   }
 }

@@ -1,0 +1,59 @@
+@import '~@qneyraud/q-stylus'
+
+darkblue = #15202b
+
+html, body
+  background-color lighten(darkblue, 5)
+  font-family Helvetica, sans-serif
+
+main
+  overflow-x hidden
+
+.routes
+  size(8)
+  margin-top 75px
+
+.route
+  position relative
+  overflow hidden
+  border-radius 3px
+  background-color #F4EDDE
+  margin-top 25px
+  padding 35px 25px
+  height 200px
+  display flex
+
+  &:before
+    content ''
+    position absolute
+    top 0
+    left 0
+    bottom 0
+    width 10px
+    background-color transparent
+    transition all 0.3s
+
+  &.pending_request
+    &:before
+      background-color orange
+
+  &.error_request
+    &:before
+      background-color red
+
+.request-infos
+  position relative
+  display flex
+  flex-direction column
+  justify-content center
+
+  .method
+    position absolute
+    top 50%
+    left 0
+    transform translate(0, -50%)
+    font-weight 900
+    font-size 130px
+    color rgba(darkblue, 0.15)
+    text-transform uppercase
+    no-pointer()
