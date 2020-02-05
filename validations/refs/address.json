@@ -1,0 +1,12 @@
+{
+  "id": "/SimpleAddress",
+  "type": "object",
+  "properties": {
+    "city": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "city"
+  ]
+}
