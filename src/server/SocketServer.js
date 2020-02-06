@@ -1,12 +1,13 @@
 const WebSocket = require('ws')
-const Event = require('../utils/Event')
+const EventEmitter = require('events')
+const Config = require('../lib/config')
 
-module.exports = class SocketServer extends Event {
+module.exports = class SocketServer extends EventEmitter {
   constructor () {
     super()
 
     this.instance = new WebSocket.Server({
-      port: 8080
+      port: Config.socketPort
     })
     this.client = null
 

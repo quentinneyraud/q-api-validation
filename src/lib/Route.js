@@ -5,7 +5,8 @@ const Config = require('./config')
 const Validator = require('jsonschema').Validator
 
 module.exports = class Route {
-  constructor ({ url, method, datas, schema, refs, requestParameters }) {
+  constructor ({ id, url, method, datas, schema, refs, requestParameters }) {
+    this.id = id
     this.url = url
     this.method = method
     this.datas = datas
@@ -61,7 +62,7 @@ module.exports = class Route {
     // })
   }
 
-  async execute () {
+  async validate () {
     this.spinner.start('Request...')
     this.resetState()
 

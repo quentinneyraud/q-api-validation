@@ -1,21 +1,18 @@
 const SocketServer = require('./server/SocketServer')
 const open = require('open')
 const Config = require('./lib/config')
-const Route = require('./lib/Route')
+const Routes = require('./lib/routes')
 const Server = require('./server/index')
 
-let routes = []
-
 module.exports = async options => {
-  Config.init(options)
-  await Config.loadConfigFile()
+  await Config.init(options)
 
-  routes = Config.routes.map(route => new Route(route))
-  const promises = routes.map(route => route.execute())
-  const all = await Promise.all(promises)
+  const routes = new Routes(Config.routes)
+
+  routes.validateAllRoutes()
 
   if (Config.command === 'run') {
-    console.table(all)
+    // console.table(all)
   } else if (Config.command === 'interactive') {
     const server = new Server({
       port: Config.port
