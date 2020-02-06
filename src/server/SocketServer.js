@@ -1,11 +1,10 @@
 const WebSocket = require('ws')
-const EventEmitter = require('events')
-const Config = require('../lib/config')
+const Config = require('../lib/Config')
+const { Events, NEW_SOCKET_CLIENT, SOCKET_CLIENT_MESSAGE } = require('../Events')
 
-module.exports = class SocketServer extends EventEmitter {
+module.exports = class SocketServer {
   constructor () {
-    super()
-
+    this.bindMethods()
     this.instance = new WebSocket.Server({
       port: Config.socketPort
     })
@@ -14,22 +13,29 @@ module.exports = class SocketServer extends EventEmitter {
     this.instance.on('connection', this.onConnection.bind(this))
   }
 
+  bindMethods () {
+    this.send = this.send.bind(this)
+  }
+
   onConnection (client) {
     this.client = client
 
     this.client.on('message', this.onMessage.bind(this))
 
-    this.emit('connection')
+    Events.emit(NEW_SOCKET_CLIENT, {
+      client: this.client,
+      send: this.send
+    })
   }
 
   onMessage (datas) {
-    this.emit('message', datas)
-    console.log('message', datas)
+    Events.emit(SOCKET_CLIENT_MESSAGE, {
+      datas,
+      send: this.send
+    })
   }
 
   send (type, datas) {
-    if (!this.client) return
-
     const content = {
       type,
       datas

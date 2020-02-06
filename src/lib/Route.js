@@ -1,7 +1,7 @@
 const path = require('path')
 const ora = require('ora')
 const axios = require('axios')
-const Config = require('./config')
+const Config = require('./Config')
 const Validator = require('jsonschema').Validator
 
 module.exports = class Route {
@@ -21,6 +21,7 @@ module.exports = class Route {
     }
 
     this.state = {}
+    this.resetState()
 
     this.createValidator()
     this.spinner = ora()
@@ -37,6 +38,7 @@ module.exports = class Route {
 
   resetState () {
     this.updateState({
+      id: this.id,
       state: 'pending_request',
       request: this.requestParameters,
       response: {

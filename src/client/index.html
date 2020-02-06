@@ -7,28 +7,42 @@
   <title>Document</title>
 </head>
 
-<body>
-  <main id="app">
+<body style="background-color:#1d2d3c">
+  <main id="app" v-cloak style="display:none">
 
     <div class="l-container">
 
       <div class="l-row u-center">
 
-        <div class="l-column routes">
-
+        <!-- Routes -->
+        <transition-group name="routes" tag="div" class="l-column routes">
+          <!-- Route -->
           <div
-            class="route"
-            :class="routeState.state"
-            v-for="(routeState, index) in routes"
-            :key="index">
+          class="route"
+          :class="[routeState.state, { expanded: routeState.expanded }]"
+          @click="routeState.expanded = !routeState.expanded"
+          v-for="(routeState, index) in routes"
+          :key="index">
 
-            <div class="request-infos">
-              <span class="method">{{ routeState.request.method }}</span>
-              <a :href="routeState.request.url" title="Voir la page" rel="noreferrer">{{ routeState.request.url }}</a>
+            <div class="route-main">
+
+              <!-- Route infos -->
+              <div class="route-infos">
+                <span class="method">{{ routeState.request.method }}</span>
+                <a :href="routeState.request.url" title="Voir la page" target="_blank" rel="noreferrer">{{ routeState.request.url }}</a>
+              </div>
+
             </div>
+
+            <div class="route-add">
+              <div class="route-add-inner">
+                test
+              </div>
+            </div>
+
           </div>
 
-        </div>
+        </transition-group>
 
       </div>
 

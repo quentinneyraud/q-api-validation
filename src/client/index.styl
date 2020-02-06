@@ -5,23 +5,43 @@ darkblue = #15202b
 html, body
   background-color lighten(darkblue, 5)
   font-family Helvetica, sans-serif
+  min-height 100vh
 
 main
   overflow-x hidden
 
+  &:not([v-cloak])
+    display block !important
+
 .routes
   size(8)
   margin-top 75px
+  overflow hidden
 
 .route
   position relative
-  overflow hidden
-  border-radius 3px
-  background-color #F4EDDE
   margin-top 25px
-  padding 35px 25px
-  height 200px
+
+  &.pending_request .route-main
+    &:before
+      background-color orange
+
+  &.error_request .route-main
+    &:before
+      background-color red
+
+  &.expanded .route-add
+    max-height 100px
+
+.route-main
+  position relative
   display flex
+  height 200px
+  padding 35px 25px
+  cursor pointer
+  background-color #F4EDDE
+  border-top-right-radius 5px
+  border-bottom-right-radius 5px
 
   &:before
     content ''
@@ -33,15 +53,18 @@ main
     background-color transparent
     transition all 0.3s
 
-  &.pending_request
-    &:before
-      background-color orange
+.route-add
+  max-height 0
+  height 100%
+  background-color #fff
+  margin 0 25px
+  overflow hidden
+  transition max-height 0.7s easeInCubic
 
-  &.error_request
-    &:before
-      background-color red
+.route-add-inner
+  padding 35px 25px
 
-.request-infos
+.route-infos
   position relative
   display flex
   flex-direction column
@@ -57,3 +80,12 @@ main
     color rgba(darkblue, 0.15)
     text-transform uppercase
     no-pointer()
+
+
+.routes-enter-active, .routes-leave-active {
+  transition: transform 0.7s easeInOutCubic, opacity 0.4s easeInQuad;
+}
+.routes-enter, .routes-leave-to {
+  opacity: 0;
+  transform: translateY(60px);
+}

@@ -9,6 +9,10 @@ module.exports = {
       "argsIgnorePattern": "^_"
     }],
     "padded-blocks": ["error", "never"],
-    "no-new": 0
+    "no-new": 0,
+    "import/no-unresolved": [2, {
+      "commonjs": true,
+      "amd": true
+    }]
   }
 };

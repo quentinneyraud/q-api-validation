@@ -2,6 +2,7 @@ const http = require('http')
 const fs = require('fs')
 const fsPromises = fs.promises
 const path = require('path')
+const Config = require('../lib/Config')
 
 const CLIENT_DIRECTORY = path.join(process.cwd(), 'build/client')
 
@@ -23,8 +24,8 @@ const MIME_TYPES = {
 }
 
 module.exports = class Server {
-  constructor ({ port }) {
-    this.port = port
+  constructor () {
+    this.port = Config.port
 
     this.createServer()
   }

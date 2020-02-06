@@ -1,9 +1,10 @@
-const EventEmitter = require('events')
+const { Events, NEW_SOCKET_CLIENT, VALIDATE_ALL } = require('../Events')
+const { INIT_ROUTES } = require('../SharedConfig')
 const Route = require('./Route')
 
-module.exports = class Routes extends EventEmitter {
+module.exports = class Routes {
   constructor (routes) {
-    super()
+    this.bindMethods()
 
     this.routes = routes.map((routeConfig, index) => {
       return new Route({
@@ -12,8 +13,21 @@ module.exports = class Routes extends EventEmitter {
       })
     })
 
-    this.on('validate_all_routes', this.validateAllRoutes)
-    this.on('validate_route', this.validateRoute)
+    Events.on(NEW_SOCKET_CLIENT, this.onNewSocketClient)
+    Events.on(VALIDATE_ALL, this.validateAllRoutes)
+  }
+
+  bindMethods () {
+    this.onNewSocketClient = this.onNewSocketClient.bind(this)
+    this.validateAllRoutes = this.validateAllRoutes.bind(this)
+  }
+
+  onNewSocketClient ({ send }) {
+    send(INIT_ROUTES, this.getAllRoutesStates())
+  }
+
+  getAllRoutesStates () {
+    return this.routes.map(route => route.state)
   }
 
   getRouteById (id) {
