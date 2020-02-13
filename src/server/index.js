@@ -4,7 +4,7 @@ const fsPromises = fs.promises
 const path = require('path')
 const Config = require('../lib/Config')
 
-const CLIENT_DIRECTORY = path.join(process.cwd(), 'build/client')
+const CLIENT_DIRECTORY = path.join(__dirname, './client')
 
 const MIME_TYPES = {
   '.ico': 'image/x-icon',

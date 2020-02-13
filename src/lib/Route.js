@@ -1,12 +1,12 @@
 const path = require('path')
-const ora = require('ora')
 const axios = require('axios')
 const Config = require('./Config')
 const Validator = require('jsonschema').Validator
+const { Events, ROUTE_STATE_CHANGED } = require('./Events')
 
 module.exports = class Route {
-  constructor ({ id, url, method, datas, schema, refs, requestParameters }) {
-    this.id = id
+  constructor ({ url, method, datas, schema, refs, requestParameters }) {
+    this.uid = Math.random().toString(36).substr(2, 9)
     this.url = url
     this.method = method
     this.datas = datas
@@ -24,7 +24,6 @@ module.exports = class Route {
     this.resetState()
 
     this.createValidator()
-    this.spinner = ora()
   }
 
   createValidator () {
@@ -38,7 +37,7 @@ module.exports = class Route {
 
   resetState () {
     this.updateState({
-      id: this.id,
+      uid: this.uid,
       state: 'pending_request',
       request: this.requestParameters,
       response: {
@@ -58,14 +57,10 @@ module.exports = class Route {
       ...newState
     }
 
-    // this.emit('route_state_updated', {
-    //   id: this.id,
-    //   state: this.state
-    // })
+    Events.emit(ROUTE_STATE_CHANGED, this.state)
   }
 
   async validate () {
-    this.spinner.start('Request...')
     this.resetState()
 
     try {
@@ -82,8 +77,6 @@ module.exports = class Route {
           headers: response.headers
         }
       })
-
-      this.spinner.text = 'Validate JSON response...'
     } catch (error) {
       this.updateState({
         state: 'error_request',
@@ -94,12 +87,6 @@ module.exports = class Route {
           headers: error.response.headers
         }
       })
-    }
-
-    if (this.state.hasError) {
-      this.spinner.fail(`${this.method} ${this.fullUrl} : ${this.state.message}`)
-    } else {
-      this.spinner.succeed(`${this.method} ${this.fullUrl} : ${this.state.message}`)
     }
 
     return this.state

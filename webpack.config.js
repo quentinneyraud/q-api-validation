@@ -57,6 +57,10 @@ const clientConfig = {
  */
 const serverConfig = {
   target: 'node',
+  node: {
+    __dirname: false,
+    __filename: false
+  },
   stats,
   entry: './src/index.js',
   output: {

@@ -10,6 +10,13 @@
 <body style="background-color:#1d2d3c">
   <main id="app" v-cloak style="display:none">
 
+    <!-- Header -->
+    <header>
+
+      <button @click="validateAllRoutes">reload all</button>
+
+    </header>
+
     <div class="l-container">
 
       <div class="l-row u-center">
@@ -21,8 +28,8 @@
           class="route"
           :class="[routeState.state, { expanded: routeState.expanded }]"
           @click="routeState.expanded = !routeState.expanded"
-          v-for="(routeState, index) in routes"
-          :key="index">
+          v-for="routeState in routes"
+          :key="routeState.uid">
 
             <div class="route-main">
 
@@ -30,6 +37,11 @@
               <div class="route-infos">
                 <span class="method">{{ routeState.request.method }}</span>
                 <a :href="routeState.request.url" title="Voir la page" target="_blank" rel="noreferrer">{{ routeState.request.url }}</a>
+              </div>
+
+              <!-- Route actions -->
+              <div class="route-actions">
+                <button @click="validateRoute(routeState.uid)">Revalidate</button>
               </div>
 
             </div>

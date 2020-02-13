@@ -2,13 +2,14 @@ const path = require('path')
 const isPortReachable = require('is-port-reachable')
 const getPort = require('get-port')
 const { logError } = require('./log')
-const { SOCKET_PORTS } = require('../SharedConfig')
+const { SOCKET_PORTS } = require('../shared')
 
 const DEFAULT_CONFIG_FILE = path.join(process.cwd(), 'q-api-validation.config.js')
 const DEFAULT_PORT = 5000
 
 class Config {
-  async init ({ command, configFile, openBrowser, port }) {
+  async init ({ command, configFile, openBrowser, port, fromCli }) {
+    this.fromCli = fromCli || false
     this.command = command
     this.configFile = configFile || DEFAULT_CONFIG_FILE
     this.openBrowser = openBrowser || false

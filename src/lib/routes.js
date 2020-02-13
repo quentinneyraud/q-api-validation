@@ -1,12 +1,14 @@
-const { Events, NEW_SOCKET_CLIENT, VALIDATE_ALL } = require('../Events')
-const { INIT_ROUTES } = require('../SharedConfig')
+const { Events, NEW_SOCKET_CLIENT, VALIDATE_ALL, VALIDATE_ROUTE } = require('./Events')
+const { INIT_ROUTES } = require('../shared')
 const Route = require('./Route')
 
-module.exports = class Routes {
-  constructor (routes) {
+class Routes {
+  constructor () {
     this.bindMethods()
+  }
 
-    this.routes = routes.map((routeConfig, index) => {
+  createRoutes (routesConfigs) {
+    this.routes = routesConfigs.map((routeConfig, index) => {
       return new Route({
         id: index,
         ...routeConfig
@@ -15,6 +17,7 @@ module.exports = class Routes {
 
     Events.on(NEW_SOCKET_CLIENT, this.onNewSocketClient)
     Events.on(VALIDATE_ALL, this.validateAllRoutes)
+    Events.on(VALIDATE_ROUTE, this.validateRoute)
   }
 
   bindMethods () {
@@ -50,3 +53,5 @@ module.exports = class Routes {
     this.routes.forEach(route => route.validate())
   }
 }
+
+module.exports = new Routes()

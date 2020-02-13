@@ -1,6 +1,7 @@
 const WebSocket = require('ws')
 const Config = require('../lib/Config')
-const { Events, NEW_SOCKET_CLIENT, SOCKET_CLIENT_MESSAGE } = require('../Events')
+const { Events, NEW_SOCKET_CLIENT } = require('../lib/Events')
+const { ROUTE_STATE_CHANGED, VALIDATE_ALL_ROUTE, VALIDATE_ROUTE } = require('../shared')
 
 module.exports = class SocketServer {
   constructor () {
@@ -21,18 +22,12 @@ module.exports = class SocketServer {
     this.client = client
 
     this.client.on('message', this.onMessage.bind(this))
-
-    Events.emit(NEW_SOCKET_CLIENT, {
-      client: this.client,
-      send: this.send
-    })
   }
 
-  onMessage (datas) {
-    Events.emit(SOCKET_CLIENT_MESSAGE, {
-      datas,
-      send: this.send
-    })
+  onMessage (socketContent) {
+    const { type, datas } = socketContent
+
+    console.log({ type, datas })
   }
 
   send (type, datas) {

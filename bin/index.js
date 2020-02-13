@@ -38,16 +38,18 @@ const cliExecution = meow(`
   }
 })
 
+// Show help if -h flag is present
 if (cliExecution.flags.h) {
   cliExecution.showHelp()
 }
 
+// Show version if -v flag is present
 if (cliExecution.flags.v) {
   cliExecution.showVersion()
 }
 
+// Show help on unknown command
 const command = COMMANDS.indexOf(cliExecution.input[0]) > -1 ? cliExecution.input[0] : null
-
 if (!command) {
   cliExecution.showHelp()
 }
@@ -55,6 +57,7 @@ if (!command) {
 const [_, ...files] = cliExecution.input
 
 QApiValidation({
+  fromCli: true,
   command,
   files,
   configFile: cliExecution.unnormalizedFlags.config,
