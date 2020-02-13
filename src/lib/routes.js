@@ -1,6 +1,6 @@
-const { Events, NEW_SOCKET_CLIENT, VALIDATE_ALL, VALIDATE_ROUTE } = require('./Events')
-const { INIT_ROUTES } = require('../shared')
+const { NEW_SOCKET_CLIENT, INIT_ROUTES, VALIDATE_ROUTE, VALIDATE_ALL_ROUTES } = require('../shared')
 const Route = require('./Route')
+const socketServer = require('../server/SocketServer')
 
 class Routes {
   constructor () {
@@ -15,34 +15,33 @@ class Routes {
       })
     })
 
-    Events.on(NEW_SOCKET_CLIENT, this.onNewSocketClient)
-    Events.on(VALIDATE_ALL, this.validateAllRoutes)
-    Events.on(VALIDATE_ROUTE, this.validateRoute)
+    socketServer.on(NEW_SOCKET_CLIENT, this.onNewSocketClient)
+    socketServer.on(VALIDATE_ALL_ROUTES, this.validateAllRoutes)
+    socketServer.on(VALIDATE_ROUTE, this.validateRoute)
   }
 
   bindMethods () {
     this.onNewSocketClient = this.onNewSocketClient.bind(this)
     this.validateAllRoutes = this.validateAllRoutes.bind(this)
+    this.validateRoute = this.validateRoute.bind(this)
   }
 
-  onNewSocketClient ({ send }) {
-    send(INIT_ROUTES, this.getAllRoutesStates())
+  onNewSocketClient () {
+    socketServer.emit(INIT_ROUTES, this.getAllRoutesStates())
   }
 
   getAllRoutesStates () {
     return this.routes.map(route => route.state)
   }
 
-  getRouteById (id) {
-    return this.routes.find(route => route.id === id)
+  getRouteById (uid) {
+    return this.routes.find(route => route.uid === uid)
   }
 
-  validateRoute (datas) {
-    const routeId = datas.routeId
+  validateRoute ({ uid }) {
+    if (!uid) return
 
-    if (!routeId) return
-
-    const route = this.getRouteById(routeId)
+    const route = this.getRouteById(uid)
 
     if (!route) return
 

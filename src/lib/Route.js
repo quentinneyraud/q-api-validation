@@ -2,7 +2,8 @@ const path = require('path')
 const axios = require('axios')
 const Config = require('./Config')
 const Validator = require('jsonschema').Validator
-const { Events, ROUTE_STATE_CHANGED } = require('./Events')
+const socketServer = require('../server/SocketServer')
+const { ROUTE_STATE_CHANGED } = require('../shared')
 
 module.exports = class Route {
   constructor ({ url, method, datas, schema, refs, requestParameters }) {
@@ -57,7 +58,7 @@ module.exports = class Route {
       ...newState
     }
 
-    Events.emit(ROUTE_STATE_CHANGED, this.state)
+    socketServer.emit(ROUTE_STATE_CHANGED, this.state)
   }
 
   async validate () {

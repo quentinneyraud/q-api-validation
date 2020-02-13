@@ -1,8 +1,10 @@
 const http = require('http')
+const chalk = require('chalk')
 const fs = require('fs')
 const fsPromises = fs.promises
 const path = require('path')
 const Config = require('../lib/Config')
+const { logIntro } = require('../lib/log')
 
 const CLIENT_DIRECTORY = path.join(__dirname, './client')
 
@@ -23,7 +25,7 @@ const MIME_TYPES = {
   '.ttf': 'aplication/font-sfnt'
 }
 
-module.exports = class Server {
+module.exports = class HttpServer {
   constructor () {
     this.port = Config.port
 
@@ -61,6 +63,12 @@ module.exports = class Server {
   }
 
   start () {
-    this.server.listen(this.port)
+    this.server.listen(this.port, null, err => {
+      if (err) {
+        throw err
+      }
+
+      logIntro(`Server listening at ${chalk.green(`http://locahost:${Config.port}`)}`)
+    })
   }
 }

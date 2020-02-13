@@ -12,7 +12,7 @@ new Vue({
 
     if (!this.socketClient) return
 
-    this.socketClient.onmessage = this.onMessage
+    this.socketClient.onmessage = this.onSocketMessage
   },
   methods: {
     getSocketClient () {
@@ -30,22 +30,19 @@ new Vue({
       return client
     },
     validateAllRoutes () {
-      this.send(VALIDATE_ALL_ROUTE)
+      this.emit(VALIDATE_ALL_ROUTE)
     },
     validateRoute (uid) {
-      this.send(VALIDATE_ROUTE, { uid })
+      console.log('validate', uid)
+      this.emit(VALIDATE_ROUTE, { uid })
     },
-    send (type, datas = null) {
-      console.log('send', { type, datas })
+    emit (type, datas = null) {
       const content = {
         type,
         datas
       }
 
-      console.log(this.socketClient)
-      this.socketClient.clients.forEach(client => {
-        client.send(JSON.stringify(content))
-      })
+      this.socketClient.emit(JSON.stringify(content))
     },
     onSocketMessage (event) {
       console.log('onSocketMessage', event)

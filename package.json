@@ -53,6 +53,7 @@
   "dependencies": {
     "@qneyraud/q-stylus": "^1.5.6",
     "axios": "^0.19.2",
+    "boxen": "^4.2.0",
     "chalk": "^3.0.0",
     "core-js": "3",
     "get-port": "^5.1.1",

@@ -41,7 +41,7 @@
 
               <!-- Route actions -->
               <div class="route-actions">
-                <button @click="validateRoute(routeState.uid)">Revalidate</button>
+                <button @click.stop="validateRoute(routeState.uid)">Revalidate</button>
               </div>
 
             </div>

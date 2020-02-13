@@ -1,43 +1,46 @@
 const WebSocket = require('ws')
+const events = require('events')
 const Config = require('../lib/Config')
-const { Events, NEW_SOCKET_CLIENT } = require('../lib/Events')
-const { ROUTE_STATE_CHANGED, VALIDATE_ALL_ROUTE, VALIDATE_ROUTE } = require('../shared')
+const { NEW_SOCKET_CLIENT } = require('../shared')
 
-module.exports = class SocketServer {
-  constructor () {
-    this.bindMethods()
+class SocketServer extends events.EventEmitter {
+  start () {
     this.instance = new WebSocket.Server({
       port: Config.socketPort
     })
+    this.instance.on('open', _ => {
+      this.ready = true
+    })
+
     this.client = null
 
     this.instance.on('connection', this.onConnection.bind(this))
-  }
-
-  bindMethods () {
-    this.send = this.send.bind(this)
   }
 
   onConnection (client) {
     this.client = client
 
     this.client.on('message', this.onMessage.bind(this))
+
+    this.emit(NEW_SOCKET_CLIENT)
   }
 
   onMessage (socketContent) {
-    const { type, datas } = socketContent
+    const { type, datas } = JSON.parse(socketContent)
 
-    console.log({ type, datas })
+    this.emit(type, datas)
   }
 
-  send (type, datas) {
+  emit (type, datas) {
+    if (!this.ready) return
+
     const content = {
       type,
       datas
     }
 
-    this.instance.clients.forEach(client => {
-      client.send(JSON.stringify(content))
-    })
+    this.client.send(JSON.stringify(content))
   }
 }
+
+module.exports = new SocketServer()

@@ -54,12 +54,12 @@ if (!command) {
   cliExecution.showHelp()
 }
 
-const [_, ...files] = cliExecution.input
+// const [_, ...files] = cliExecution.input
 
 QApiValidation({
   fromCli: true,
   command,
-  files,
+  // files,
   configFile: cliExecution.unnormalizedFlags.config,
   openBrowser: cliExecution.unnormalizedFlags.open,
   port: cliExecution.unnormalizedFlags.port

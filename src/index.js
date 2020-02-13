@@ -1,7 +1,7 @@
 const open = require('open')
 
-const SocketServer = require('./server/SocketServer')
-const Server = require('./server/index')
+const socketServer = require('./server/SocketServer')
+const HttpServer = require('./server/HttpServer')
 const Config = require('./lib/Config')
 const Routes = require('./lib/Routes')
 
@@ -22,12 +22,10 @@ module.exports = async options => {
 
   // Interactive command
   const interactive = () => {
-    const server = new Server()
-    server.start()
+    const httpServer = new HttpServer()
+    httpServer.start()
 
-    new SocketServer()
-
-    console.log(`Server listening at http://localhost:${Config.port}`)
+    socketServer.start()
 
     if (Config.openBrowser) {
       open(`http://localhost:${Config.port}`)
