@@ -12,35 +12,30 @@ module.exports = async options => {
   // init all routes
   Routes.createRoutes(Config.routes)
 
-  // validate all routes
-  Routes.validateAllRoutes()
-
   // Run command
   const run = () => {
-    // console.table(all)
-  }
+    // validate all routes
+    Routes.validateAllRoutes()
 
-  // Interactive command
-  const interactive = () => {
-    const httpServer = new HttpServer()
-    httpServer.start()
+    if (Config.watch) {
+      // new Chokidar()
+    }
 
-    socketServer.start()
+    if (Config.interactive) {
+      const httpServer = new HttpServer()
+      httpServer.start()
 
-    if (Config.openBrowser) {
-      open(`http://localhost:${Config.port}`)
+      socketServer.start()
+
+      if (Config.openBrowser) {
+        open(`http://localhost:${Config.port}`)
+      }
+    } else {
+      // console.table(all)
     }
   }
 
-  if (Config.fromCli) {
-    // CLI execution, execute appropriate command
-    if (Config.command === 'run') run()
-    if (Config.command === 'interactive') interactive()
-  } else {
-    // JS file execution, return commands
-    return {
-      run,
-      interactive
-    }
+  return {
+    run
   }
 }
