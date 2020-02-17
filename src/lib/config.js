@@ -1,29 +1,54 @@
 const path = require('path')
+const defu = require('defu')
 const isPortReachable = require('is-port-reachable')
 const getPort = require('get-port')
 const { logError } = require('./log')
 const { SOCKET_PORTS } = require('../shared')
 
+const DEFAULT_CONFIG = {
+  baseUrl: null,
+  interactive: {
+    port: 5000,
+    open: false
+  },
+  watch: null,
+  request: {
+    headers: {},
+    timeout: 5000
+  },
+  routes: []
+}
 const DEFAULT_CONFIG_FILE = path.join(process.cwd(), 'q-api-validation.config.js')
-const DEFAULT_PORT = 5000
 
 class Config {
-  async init ({ command, configFile, openBrowser, port, fromCli }) {
-    this.fromCli = fromCli || false
-    this.command = command
+  async init ({ configFile, watch, interactive, open, port }) {
     this.configFile = configFile || DEFAULT_CONFIG_FILE
-    this.openBrowser = openBrowser || false
-    this.port = port || DEFAULT_PORT
+    this.watch = watch
+    this.interactive = interactive
 
-    this.socketPort = await getPort({
-      port: SOCKET_PORTS
-    })
+    this.parameters = DEFAULT_CONFIG
+
+    if (this.interactive) {
+      this.parameters = defu({
+        interactive: {
+          port,
+          open
+        }
+      }, this.parameters)
+    }
+
     await this.loadConfigFile()
-    await this.validatePort()
+
+    if (this.interactive) {
+      this.parameters.interactive.socketPort = await getPort({
+        port: SOCKET_PORTS
+      })
+      await this.validatePort()
+    }
   }
 
   async validatePort () {
-    const reachable = await isPortReachable(this.port)
+    const reachable = await isPortReachable(this.parameters.interactive.port)
 
     if (!reachable) {
       this.port = await getPort({
@@ -37,14 +62,7 @@ class Config {
       // eslint-disable-next-line
       const configFile = __non_webpack_require__(this.configFile)
 
-      this.baseUrl = configFile.baseUrl || ''
-      this.defaultTimeout = configFile.timeout || null
-      this.defaultHeaders = configFile.headers || {}
-      this.routes = configFile.routes || []
-      this.requestParameters = {
-        method: 'GET',
-        ...configFile.requestParameters
-      }
+      this.parameters = defu(configFile, this.parameters)
     } catch (e) {
       if (e.code === 'ENOENT') logError(`Cannot find config file : ${this.configFile}`)
     }

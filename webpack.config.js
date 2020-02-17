@@ -68,6 +68,12 @@ const serverConfig = {
     libraryTarget: 'umd',
     path: dist,
     filename: 'q-api-validation.js'
+  },
+  module: {
+    rules: [{
+      test: /\.node$/,
+      use: 'node-loader'
+    }]
   }
 }
 

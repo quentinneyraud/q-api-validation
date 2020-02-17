@@ -1,4 +1,5 @@
 const open = require('open')
+const chokidar = require('chokidar')
 
 const socketServer = require('./server/SocketServer')
 const HttpServer = require('./server/HttpServer')
@@ -10,7 +11,7 @@ module.exports = async options => {
   await Config.init(options)
 
   // init all routes
-  Routes.createRoutes(Config.routes)
+  Routes.createRoutes(Config.parameters.routes)
 
   // Run command
   const run = () => {
@@ -18,7 +19,7 @@ module.exports = async options => {
     Routes.validateAllRoutes()
 
     if (Config.watch) {
-      // new Chokidar()
+      chokidar.watch(Config.parameters.watch).on('all', Routes.validateAllRoutes.bind(Routes))
     }
 
     if (Config.interactive) {
@@ -27,7 +28,7 @@ module.exports = async options => {
 
       socketServer.start()
 
-      if (Config.openBrowser) {
+      if (Config.parameters.interactive.open) {
         open(`http://localhost:${Config.port}`)
       }
     } else {

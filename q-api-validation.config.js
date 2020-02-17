@@ -3,6 +3,7 @@ module.exports = {
   interactive: {
     port: 4000
   },
+  watch: ['fake-api/index.js'],
   request: {
     headers: {},
     timeout: 5000
@@ -18,7 +19,7 @@ module.exports = {
     body: {
       test: '5'
     },
-    watch: 'src/*',
+    watch: ['fake-api/formations/index.js'],
     poll: 2000,
     extendValidations: ({ validations }) => {
       return [{

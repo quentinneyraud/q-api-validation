@@ -8,12 +8,7 @@ class Routes {
   }
 
   createRoutes (routesConfigs) {
-    this.routes = routesConfigs.map((routeConfig, index) => {
-      return new Route({
-        id: index,
-        ...routeConfig
-      })
-    })
+    this.routes = routesConfigs.map(routeConfig => new Route(routeConfig))
 
     socketServer.on(NEW_SOCKET_CLIENT, this.onNewSocketClient)
     socketServer.on(VALIDATE_ALL_ROUTES, this.validateAllRoutes)

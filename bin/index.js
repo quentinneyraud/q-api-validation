@@ -60,7 +60,7 @@ if (cliExecution.flags.v) {
 }
 
 // Show help on unknown command
-if (!cliExecution.input[0] === 'run') {
+if (cliExecution.input[0] !== 'run') {
   cliExecution.showHelp()
 }
 
